@@ -49,6 +49,7 @@ def choose_pokemon(player_profile):
             else:
                 return pokemon
         except (ValueError, IndexError):
+            os.system("cls")
             print("\nELIGE UN POKÉMON VÁLIDO")
 
 
@@ -165,6 +166,7 @@ def player_attack(player_pokemon, enemy_pokemon):
         try:
             attack_chosen = acceded_attacks[int(input("\n")) - 1]
         except (ValueError, IndexError):
+            os.system("cls")
             print("\nELIGE UN ATAQUE VÁLIDO")
     os.system("cls")
     print("\n{} ha utilizado {}".format(player_pokemon["name"], attack_chosen["name"]))
@@ -227,7 +229,41 @@ def capture_with_pokeball(enemy_pokemon, player_profile):
 
 
 def cure_pokemon(player_profile, player_pokemon):
-    pass
+    os.system("cls")
+    if player_profile["health_potion"] == 0:
+        print("\nNo tienes pociones de vida")
+        sleep(1)
+        input("\nPulsa ENTER para continuar")
+        os.system("cls")
+        return False
+    else:
+        if player_pokemon["currentHealth"] == player_pokemon["baseHealth"]:
+            print("\nTu Pokémon ya tiene el máximo de salud")
+            input("Pulsa ENTER para continuar")
+            os.system("cls")
+            return False
+        print("\nPociones de vida restantes: {}".format(player_profile["health_potion"]))
+        answer = ""
+        while answer not in ["S", "N"]:
+            answer = input("¿Deseas utilizar una poción de vida en {}? S/N ".format(player_pokemon["name"]))
+            os.system("cls")
+        if answer == "S":
+            player_pokemon["currentHealth"] += 100
+            if player_pokemon["currentHealth"] > player_pokemon["baseHealth"]:
+                player_pokemon["currentHealth"] = player_pokemon["baseHealth"]
+            player_profile["health_potion"] -= 1
+
+            print("\n{}".format(get_pokemon_info(player_pokemon)))
+            print("\nHaz utilizado una poción de curación")
+
+            print("Pociones de vida restantes: {}".format(player_profile["health_potion"]))
+            sleep(1)
+            input("\nPulsa ENTER para continuar")
+            return True
+        elif answer == "N":
+            pass
+            os.system("cls")
+            return False
 
 
 def fight(player_profile, enemy_pokemon):
@@ -248,6 +284,8 @@ def fight(player_profile, enemy_pokemon):
         print("\n{}".format(get_pokemon_info(player_pokemon)))
         print("{}".format(get_pokemon_info(enemy_pokemon)))
         action = None
+        cure = True
+
         while action not in ["A", "P", "V", "C"]:
             action = input("\n¿Qué deseas hacer?: [A]tacar, [P]okéball, Poción de [V]ida, [C]ambiar Pokémon ")
 
@@ -264,20 +302,21 @@ def fight(player_profile, enemy_pokemon):
         elif action == "V":
             # Si el usuario tiene curas en el inventario se aplica, cura 50 de vida hasta llegar a 100
             # Si el usuario no tiene se cura
-            cure_pokemon(player_profile, player_pokemon)
+            cure = cure_pokemon(player_profile, player_pokemon)
         elif action == "C":
             player_pokemon = choose_pokemon(player_profile)
 
-        enemy_attack(enemy_pokemon, player_pokemon)
-        if enemy_pokemon["currentHealth"] > 0:
-            sleep(2)
-            input("\nPulsa ENTER para continuar")
-        os.system("cls")
-        if player_pokemon["currentHealth"] == 0 and any_player_pokemon_lives(player_profile):
-            print("\nTu {} se ha debilitado\n".format(player_pokemon["name"]))
-            player_pokemon = choose_pokemon(player_profile)
+        if cure:
+            enemy_attack(enemy_pokemon, player_pokemon)
+            if enemy_pokemon["currentHealth"] > 0:
+                sleep(2)
+                input("\nPulsa ENTER para continuar")
             os.system("cls")
-            print("\n¡{} entra en combate!".format(player_pokemon["name"]))
+            if player_pokemon["currentHealth"] == 0 and any_player_pokemon_lives(player_profile):
+                print("\nTu {} se ha debilitado\n".format(player_pokemon["name"]))
+                player_pokemon = choose_pokemon(player_profile)
+                os.system("cls")
+                print("\n¡{} entra en combate!".format(player_pokemon["name"]))
 
     if enemy_pokemon["currentHealth"] == 0:
         print("\n{} ha sido debilitado".format(enemy_pokemon["name"]))
@@ -306,9 +345,9 @@ def intro(player_profile):
     os.system("cls")
     print("\nINSTRUCCIONES\n\nSe te asignarán 3 Pokémon de la generación Kanto con los "
           "que tendrás que derrotar a todos los enemigos que te encuentres")
-    sleep(3)
+    sleep(1)
     print("¿{}, estás listo?".format(player_profile["player_name"]))
-    sleep(2)
+    sleep(1)
     input("\nPulsa ENTER para continuar")
 
 
