@@ -336,8 +336,23 @@ def fight(player_profile, enemy_pokemon):
 
 
 def item_lottery(player_profile):
-    # segun un factor aleatorio, al jugador le puede tocar una pokeball o una cura
-    pass
+    random_number = random.randint(1, 100)
+    if 0 < random_number <= 15:
+        os.system("cls")
+        print("\n¡Obtuviste una poción de vida!")
+        player_profile["health_potion"] += 1
+        print("\nPociones de vida restantes: {}".format(player_profile["health_potion"]))
+        sleep(1)
+        input("\nPulsa ENTER para continuar")
+    elif 15 < random_number <= 30:
+        os.system("cls")
+        print("\n¡Obtuviste una Pokéball!")
+        player_profile["pokeballs"] += 1
+        print("\nPokéballs restantes: {}".format(player_profile["pokeballs"]))
+        sleep(1)
+        input("\nPulsa ENTER para continuar")
+    else:
+        pass
 
 
 def main_screen():
