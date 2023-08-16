@@ -213,12 +213,12 @@ def assign_experience(attack_history):
         pokemon["currentExp"] += points
         total_points += points
 
-        while pokemon["currentExp"] > 20:
+        while pokemon["currentExp"] >= 20:
             pokemon["currentExp"] -= 20
             pokemon["level"] += 1
             pokemon["baseHealth"] += 10
             pokemon["currentHealth"] = pokemon["baseHealth"]
-            print("¡Tu Pokémon ha subido al nivel {}!".format(pokemon["level"]))
+            print("¡Tu {} ha subido al nivel {}!".format(pokemon["name"], pokemon["level"]))
         poke = pokemon
     print("{} ha ganado {} de XP".format(poke["name"], total_points))
     print("\n{} | XP: {}/20".format(get_pokemon_info(poke), poke["currentExp"]))
