@@ -207,9 +207,12 @@ def enemy_attack(enemy_pokemon, player_pokemon):
 
 def assign_experience(attack_history):
     poke = None
-    total_points = 0
+    pokemon_list = []
     for pokemon in attack_history:
-        points = random.randint(1, 5)
+        total_points = 0
+        if pokemon not in pokemon_list:
+            pokemon_list.append(pokemon)
+        points = random.randint(1, 10)
         pokemon["currentExp"] += points
         total_points += points
 
@@ -220,8 +223,9 @@ def assign_experience(attack_history):
             pokemon["currentHealth"] = pokemon["baseHealth"]
             print("¡Tu Pokémon ha subido al nivel {}!".format(pokemon["level"]))
         poke = pokemon
-    print("{} ha ganado {} de XP".format(poke["name"], total_points))
-    print("\n{} | XP: {}/20".format(get_pokemon_info(poke), poke["currentExp"]))
+        print("{} ha ganado {} de XP".format(poke["name"], total_points))
+    for pokemon in pokemon_list:
+        print("\n{} | XP: {}/20".format(get_pokemon_info(pokemon), pokemon["currentExp"]))
 
 
 def capture_with_pokeball(enemy_pokemon, player_profile):
