@@ -377,9 +377,20 @@ def main():
     sleep(2)
     player_profile = get_player_profile(pokemon_list)
     intro(player_profile)
+    max_pokemon_level = 0
 
     while any_player_pokemon_lives(player_profile):
         enemy_pokemon = random.choice(pokemon_list)
+        for index in range(len(player_profile["pokemon_inventory"])):
+            if max_pokemon_level == 0:
+                max_pokemon_level = player_profile["pokemon_inventory"][index]["level"]
+            elif player_profile["pokemon_inventory"][index]["level"] > \
+                    player_profile["pokemon_inventory"][index - 1]["level"]:
+                max_pokemon_level = player_profile["pokemon_inventory"][index]["level"]
+        print("El máximo nivel de tus Pokémon es: {}".format(max_pokemon_level))
+        input("\nPresiona ENTER para continuar")
+        enemy_pokemon["level"] = max_pokemon_level
+        enemy_pokemon["baseHealth"] += (max_pokemon_level - 1) * 10
         fight(player_profile, enemy_pokemon)
         item_lottery(player_profile)
 
