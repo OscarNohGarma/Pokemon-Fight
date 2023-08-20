@@ -25,7 +25,7 @@ def get_player_profile(pokemon_list):
         "player_name": input("¿Cuál es tu nombre de entrenador? "),
         "pokemon_inventory": [random.choice(pokemon_list) for a in range(3)],
         "combats": 0,
-        "pokeballs": 0,
+        "pokeballs": 3,
         "health_potion": 3
     }
 
@@ -229,7 +229,31 @@ def assign_experience(attack_history):
 
 
 def capture_with_pokeball(enemy_pokemon, player_profile):
-    pass
+    os.system("cls")
+    capture = False
+
+    probability = (1 - enemy_pokemon["currentHealth"] / enemy_pokemon["baseHealth"]) * 0.5
+    ran_number = random.random()
+    if probability == 0:
+        probability = 0.1
+    print("Probabilidad de captura {}%".format(probability))
+    print(ran_number)
+    print("1 giro...")
+    sleep(1)
+    print("2 giros...")
+    sleep(2)
+    if 0 < ran_number <= probability:
+        print("\n¡{} ha sido capturado!".format(enemy_pokemon["name"]))
+        enemy_pokemon["currentHealth"] = enemy_pokemon["baseHealth"]
+        player_profile["pokemon_inventory"].append(enemy_pokemon)
+        capture = True
+    else:
+        print("\nEl pokémon se ha escapado")
+    sleep(1)
+    player_profile["pokeballs"] -= 1
+    print("\nPokéballs restantes: {}".format(player_profile["pokeballs"]))
+    input("\nPulsa ENTER para continuar")
+    return capture
 
 
 def cure_pokemon(player_profile, player_pokemon):
@@ -283,12 +307,14 @@ def fight(player_profile, enemy_pokemon):
 
     print("\n¡{} entra en combate!".format(player_pokemon["name"]))
     print("¡{} entra en combate!".format(enemy_pokemon["name"]))
+    catch = False
 
-    while any_player_pokemon_lives(player_profile) and enemy_pokemon["currentHealth"] > 0:
+    while any_player_pokemon_lives(player_profile) and enemy_pokemon["currentHealth"] > 0 and not catch:
         print("\n{}".format(get_pokemon_info(player_pokemon)))
         print("{}".format(get_pokemon_info(enemy_pokemon)))
         action = None
         cure = True
+        pokeballs_usable = True
 
         while action not in ["A", "P", "V", "C"]:
             action = input("\n¿Qué deseas hacer?: [A]tacar, [P]okéball, Poción de [V]ida, [C]ambiar Pokémon ")
@@ -299,10 +325,15 @@ def fight(player_profile, enemy_pokemon):
             input("\nPulsa ENTER para continuar")
             attack_history.append(player_pokemon)
         elif action == "P":
-            # Si el usuario tiene pokeballs en el inventario, se tira una,
-            # hay una probabilidad de capturarlo relativa a la salud restante el pokémon
-            # Cuando se captura pasa a estar en el inventario con la misma salud que tenía
-            capture_with_pokeball(enemy_pokemon, player_profile)
+            if player_profile["pokeballs"] == 0:
+                os.system("cls")
+                print("\nNo tienes pokéballs restantes")
+                sleep(1)
+                input("\nPulsa ENTER para continuar")
+                os.system("cls")
+                pokeballs_usable = False
+            else:
+                catch = capture_with_pokeball(enemy_pokemon, player_profile)
         elif action == "V":
             # Si el usuario tiene curas en el inventario se aplica, cura 50 de vida hasta llegar a 100
             # Si el usuario no tiene se cura
@@ -310,7 +341,7 @@ def fight(player_profile, enemy_pokemon):
         elif action == "C":
             player_pokemon = choose_pokemon(player_profile)
 
-        if cure:
+        if cure and not catch and pokeballs_usable:
             enemy_attack(enemy_pokemon, player_pokemon)
             if enemy_pokemon["currentHealth"] > 0:
                 sleep(1)
@@ -326,6 +357,13 @@ def fight(player_profile, enemy_pokemon):
         print("\n{} ha sido debilitado".format(enemy_pokemon["name"]))
         sleep(1)
         print("¡HAZ GANADO!")
+        player_profile["combats"] += 1
+        sleep(1)
+        assign_experience(attack_history)
+        sleep(1)
+    elif catch:
+        os.system("cls")
+        print("\n{} ha sido añadido a tu inventario".format(enemy_pokemon["name"]))
         player_profile["combats"] += 1
         sleep(1)
         assign_experience(attack_history)
