@@ -295,7 +295,7 @@ def fight(player_profile, enemy_pokemon):
 
         if action == "A":
             player_attack(player_pokemon, enemy_pokemon)
-            sleep(2)
+            sleep(1)
             input("\nPulsa ENTER para continuar")
             attack_history.append(player_pokemon)
         elif action == "P":
@@ -313,7 +313,7 @@ def fight(player_profile, enemy_pokemon):
         if cure:
             enemy_attack(enemy_pokemon, player_pokemon)
             if enemy_pokemon["currentHealth"] > 0:
-                sleep(2)
+                sleep(1)
                 input("\nPulsa ENTER para continuar")
             os.system("cls")
             if player_pokemon["currentHealth"] == 0 and any_player_pokemon_lives(player_profile):
@@ -374,12 +374,23 @@ def main():
     main_screen()
     os.system("cls")
     pokemon_list = getAllPokemons()
-    sleep(2)
+    sleep(1)
     player_profile = get_player_profile(pokemon_list)
     intro(player_profile)
+    max_pokemon_level = 0
 
     while any_player_pokemon_lives(player_profile):
         enemy_pokemon = random.choice(pokemon_list)
+        for index in range(len(player_profile["pokemon_inventory"])):
+            if max_pokemon_level == 0:
+                max_pokemon_level = player_profile["pokemon_inventory"][index]["level"]
+            elif player_profile["pokemon_inventory"][index]["level"] > \
+                    player_profile["pokemon_inventory"][index - 1]["level"]:
+                max_pokemon_level = player_profile["pokemon_inventory"][index]["level"]
+        print("El máximo nivel de tus Pokémon es: {}".format(max_pokemon_level))
+        input("\nPresiona ENTER para continuar")
+        enemy_pokemon["level"] = max_pokemon_level
+        enemy_pokemon["baseHealth"] += (max_pokemon_level - 1) * 10
         fight(player_profile, enemy_pokemon)
         item_lottery(player_profile)
 
