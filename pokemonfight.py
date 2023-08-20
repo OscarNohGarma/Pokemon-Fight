@@ -335,8 +335,6 @@ def fight(player_profile, enemy_pokemon):
             else:
                 catch = capture_with_pokeball(enemy_pokemon, player_profile)
         elif action == "V":
-            # Si el usuario tiene curas en el inventario se aplica, cura 50 de vida hasta llegar a 100
-            # Si el usuario no tiene se cura
             cure = cure_pokemon(player_profile, player_pokemon)
         elif action == "C":
             player_pokemon = choose_pokemon(player_profile)
@@ -425,7 +423,6 @@ def main():
             elif player_profile["pokemon_inventory"][index]["level"] > \
                     player_profile["pokemon_inventory"][index - 1]["level"]:
                 max_pokemon_level = player_profile["pokemon_inventory"][index]["level"]
-        print("El máximo nivel de tus Pokémon es: {}".format(max_pokemon_level))
         input("\nPresiona ENTER para continuar")
         enemy_pokemon["level"] = max_pokemon_level
         enemy_pokemon["baseHealth"] += (max_pokemon_level - 1) * 10
